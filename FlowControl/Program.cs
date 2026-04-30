@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Xml.Serialization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FlowControl
 {
@@ -30,8 +32,8 @@ namespace FlowControl
 
                 Console.WriteLine($"{(int)MenuChoice.Quit} För att avsluta");
 
-                
 
+                Console.WriteLine($"{(int)MenuChoice.RepeatText} För att upprepa text");
 
                 choice = InputInt();
 
@@ -46,7 +48,11 @@ namespace FlowControl
                 switch (numericChoice)
                 {
                     case MenuChoice.Quit:
-                            isRunning = false;
+                         isRunning = false;
+                        break;
+
+                    case MenuChoice.RepeatText:
+                            HandelRepeatText();
                         break;
 
                     default:
@@ -68,6 +74,37 @@ namespace FlowControl
             }
 
             return choice;
+        }
+
+        static void RepeatText(string text)
+        {
+
+            for (int i = 1; i <= 10; i++)
+            {
+                Console.Write($"{i.ToString()}.{text} ");
+            }
+
+            Console.WriteLine();
+        }
+
+        static bool IsValidText(string? text)
+        {
+            return !string.IsNullOrWhiteSpace(text);
+        }
+
+        static void HandelRepeatText()
+        {
+            Console.Write("Skriv din text här: ");
+            string text = Console.ReadLine();
+
+            if (!IsValidText(text))
+            {
+                Console.WriteLine("Text can not be empty.");
+                Console.WriteLine();
+                return;
+            }
+
+            RepeatText(text);
         }
     }
 }
