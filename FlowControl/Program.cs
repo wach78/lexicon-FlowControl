@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection.Metadata.Ecma335;
 using System.Xml.Serialization;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -15,7 +16,9 @@ namespace FlowControl
             RepeatText = 3,
             PrintEveryThirdWord = 4,
         }
-    
+
+        private const int MinimumWordCount = 3;
+
         static void Main(String[] args)
         {
 
@@ -34,6 +37,7 @@ namespace FlowControl
 
 
                 Console.WriteLine($"{(int)MenuChoice.RepeatText} För att upprepa text");
+                Console.WriteLine($"{(int)MenuChoice.PrintEveryThirdWord} Skriv in dina ord här med mellanslag i mellan");
 
                 choice = InputInt();
 
@@ -53,6 +57,10 @@ namespace FlowControl
 
                     case MenuChoice.RepeatText:
                             HandelRepeatText();
+                        break;
+
+                    case MenuChoice.PrintEveryThirdWord:
+                        HandleEveryThirdWord();
                         break;
 
                     default:
@@ -87,9 +95,9 @@ namespace FlowControl
             Console.WriteLine();
         }
 
-        static bool IsValidText(string? text)
+        static bool IsValidText(string? input)
         {
-            return !string.IsNullOrWhiteSpace(text);
+            return !string.IsNullOrWhiteSpace(input);
         }
 
         static void HandelRepeatText()
@@ -105,6 +113,50 @@ namespace FlowControl
             }
 
             RepeatText(text);
+        }
+
+        static bool IsValidStringLenght(string? input)
+        {
+
+            return !string.IsNullOrWhiteSpace(input) && input.Trim().Length >= 3;
+        }
+
+
+        static string[] GetWords(string? input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return [];
+            }
+
+            return input.Split(
+                   ' ',
+                   StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+               );
+        }
+
+        static void HandleEveryThirdWord()
+        {
+            Console.Write($"Skriv in minst {MinimumWordCount} ord här: ");
+            Console.WriteLine();
+
+            string text = Console.ReadLine();
+
+
+            string[] words = GetWords(text);
+
+            if (words.Length < MinimumWordCount)
+            {
+                Console.Write("Invalid number of words");
+                Console.WriteLine();
+            }
+
+            for (int i = MinimumWordCount - 1; i < words.Length; i += MinimumWordCount)
+            {
+                Console.WriteLine(words[i]);
+            }
+
+            Console.WriteLine();
         }
     }
 }
