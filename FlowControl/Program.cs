@@ -53,7 +53,7 @@ namespace FlowControl
 
             int? choice = 0;
 
-            while(isRunning)
+            while (isRunning)
             {
                 Console.WriteLine("Huvudmenyn");
                 Console.WriteLine("Här kan du gör ett val för att kunna");
@@ -73,12 +73,12 @@ namespace FlowControl
                 }
 
                 MenuChoice numericChoice = (MenuChoice)choice;
-              
+
 
                 switch (numericChoice)
                 {
                     case MenuChoice.Quit:
-                         isRunning = false;
+                        isRunning = false;
                         break;
 
                     case MenuChoice.TicketPrice:
@@ -90,7 +90,7 @@ namespace FlowControl
                         break;
 
                     case MenuChoice.RepeatText:
-                            HandelRepeatText();
+                        HandelRepeatText();
                         break;
 
                     case MenuChoice.PrintEveryThirdWord:
@@ -98,8 +98,8 @@ namespace FlowControl
                         break;
 
                     default:
-                            Console.WriteLine("Invalid choice");
-                            Console.WriteLine();
+                        Console.WriteLine("Invalid choice");
+                        Console.WriteLine();
                         break;
                 }
             }
@@ -119,7 +119,7 @@ namespace FlowControl
         }
 
         static TicketPrice CalculateTicketPrice(int age)
-        { 
+        {
 
             if (age < FreeChildMaximumAge)
             {
@@ -186,7 +186,7 @@ namespace FlowControl
 
         static int CalculateGroupTicketPrice(int[] ages)
         {
-           
+
             int groupPrice = 0;
 
             foreach (int age in ages)
@@ -265,7 +265,7 @@ namespace FlowControl
                 Console.WriteLine();
                 return;
             }
-            
+
 
             RepeatText(input);
         }
