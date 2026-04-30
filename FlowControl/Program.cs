@@ -22,8 +22,6 @@ namespace FlowControl
         static void Main(String[] args)
         {
 
-           
-
             bool isRunning = true;
 
             int? choice = 0;
@@ -113,12 +111,6 @@ namespace FlowControl
             }
 
             RepeatText(text);
-        }
-
-        static bool IsValidStringLenght(string? input)
-        {
-
-            return !string.IsNullOrWhiteSpace(input) && input.Trim().Length >= 3;
         }
 
 
