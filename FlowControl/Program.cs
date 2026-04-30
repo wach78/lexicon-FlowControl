@@ -7,7 +7,8 @@ using static System.Net.Mime.MediaTypeNames;
 namespace FlowControl
 {
     class FlowControl
-    { 
+    {
+        private const int MinimumWordCount = 3;
 
         private enum MenuChoice
         {
@@ -18,8 +19,6 @@ namespace FlowControl
             PrintEveryThirdWord = 4,
         }
 
-        private const int MinimumWordCount = 3;
-
         private enum TicketPriceType
         {
             FreeChild,
@@ -29,7 +28,7 @@ namespace FlowControl
             FreeSenior,
         }
 
-        private readonly record struct TicketPrice(
+        private sealed record TicketPrice(
             TicketPriceType Type,
             string PriceType,
             int Price
@@ -61,6 +60,7 @@ namespace FlowControl
 
                 Console.WriteLine($"{(int)MenuChoice.Quit} För att avsluta");
                 Console.WriteLine($"{(int)MenuChoice.TicketPrice} Visa biljet pris");
+                Console.WriteLine($"{(int)MenuChoice.GroupTicketPrice} Visa biljet pris för en group");
 
                 Console.WriteLine($"{(int)MenuChoice.RepeatText} För att upprepa text");
                 Console.WriteLine($"{(int)MenuChoice.PrintEveryThirdWord} Skriv in dina ord här med mellanslag i mellan");
@@ -83,6 +83,10 @@ namespace FlowControl
 
                     case MenuChoice.TicketPrice:
                         HandleTicketPrice();
+                        break;
+
+                    case MenuChoice.GroupTicketPrice:
+                        HandleGroupTicketPrice();
                         break;
 
                     case MenuChoice.RepeatText:
@@ -121,7 +125,7 @@ namespace FlowControl
             {
                 return new TicketPrice(
                     TicketPriceType.FreeChild,
-                    "Barn under 5 år: gratis",
+                    GetTicketPriceDescription(TicketPriceType.FreeChild),
                     FreePrice
                 );
             }
@@ -130,7 +134,7 @@ namespace FlowControl
             {
                 return new TicketPrice(
                     TicketPriceType.FreeSenior,
-                    "Person över 100 år: gratis",
+                    GetTicketPriceDescription(TicketPriceType.FreeSenior),
                     FreePrice
                 );
             }
@@ -139,7 +143,7 @@ namespace FlowControl
             {
                 return new TicketPrice(
                     TicketPriceType.Youth,
-                    "Ungdomspris",
+                    GetTicketPriceDescription(TicketPriceType.Youth),
                     YouthPrice
                 );
             }
@@ -148,14 +152,14 @@ namespace FlowControl
             {
                 return new TicketPrice(
                     TicketPriceType.Senior,
-                    "Pensionärspris",
+                    GetTicketPriceDescription(TicketPriceType.Senior),
                     SeniorPrice
                 );
             }
 
             return new TicketPrice(
                 TicketPriceType.Adult,
-                "Standardpris",
+                GetTicketPriceDescription(TicketPriceType.Adult),
                 AdultPrice
             );
         }
@@ -164,7 +168,7 @@ namespace FlowControl
         {
             Console.Write("Skriv in ålder: ");
 
-            int ?age = InputInt();
+            int? age = InputInt();
 
             if (age is null)
             {
@@ -176,6 +180,61 @@ namespace FlowControl
 
 
             Console.WriteLine($"{TicketPrice.PriceType}: {TicketPrice.Price} ");
+
+        }
+
+
+        static int CalculateGroupTicketPrice(int[] ages)
+        {
+           
+            int groupPrice = 0;
+
+            foreach (int age in ages)
+            {
+                var TicketPrice = CalculateTicketPrice(age);
+
+                groupPrice += TicketPrice.Price;
+
+            }
+
+            return groupPrice;
+        }
+
+        static void HandleGroupTicketPrice()
+        {
+            Console.Write("Skriv antalet bio besökare: ");
+
+            int? visitors = InputInt();
+
+            if (visitors is null)
+            {
+                Console.WriteLine("visitors is invalid");
+                return;
+            }
+
+            int? age;
+            int[] ages = new int[visitors.Value];
+
+            for (int i = 0; i < visitors; i++)
+            {
+                Console.Write("Skriv in ålder: ");
+                age = InputInt();
+                if (age is null)
+                {
+                    Console.WriteLine("Age is invalid");
+                    return;
+                }
+
+                ages[i] = age.Value;
+
+            }
+
+
+            int groupPrice = CalculateGroupTicketPrice(ages);
+
+            Console.WriteLine();
+            Console.WriteLine($"Antalet personer {visitors} Total kostand {groupPrice}kr");
+            Console.WriteLine();
 
         }
 
@@ -198,16 +257,17 @@ namespace FlowControl
         static void HandelRepeatText()
         {
             Console.Write("Skriv din text här: ");
-            string text = Console.ReadLine();
+            string? input = Console.ReadLine();
 
-            if (!IsValidText(text))
+            if (!IsValidText(input))
             {
                 Console.WriteLine("Text can not be empty.");
                 Console.WriteLine();
                 return;
             }
+            
 
-            RepeatText(text);
+            RepeatText(input);
         }
 
 
@@ -229,7 +289,7 @@ namespace FlowControl
             Console.Write($"Skriv in minst {MinimumWordCount} ord här: ");
             Console.WriteLine();
 
-            string text = Console.ReadLine();
+            string? text = Console.ReadLine();
 
 
             string[] words = GetWords(text);
@@ -246,6 +306,19 @@ namespace FlowControl
             }
 
             Console.WriteLine();
+        }
+
+        static string GetTicketPriceDescription(TicketPriceType type)
+        {
+            return type switch
+            {
+                TicketPriceType.FreeChild => "Barn under 5 år: gratis",
+                TicketPriceType.Youth => "Ungdomspris",
+                TicketPriceType.Adult => "Standardpris",
+                TicketPriceType.Senior => "Pensionärspris",
+                TicketPriceType.FreeSenior => "Person över 100 år: gratis",
+                _ => "Okänd pristyp",
+            };
         }
     }
 }
