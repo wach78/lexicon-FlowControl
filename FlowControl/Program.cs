@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -8,16 +9,43 @@ namespace FlowControl
     class FlowControl
     { 
 
-        enum MenuChoice
+        private enum MenuChoice
         {
             Quit = 0,
-            CalculateTicketPrice = 1,
-            CalculateGroupTicketPrice = 2,
+            TicketPrice = 1,
+            GroupTicketPrice = 2,
             RepeatText = 3,
             PrintEveryThirdWord = 4,
         }
 
         private const int MinimumWordCount = 3;
+
+        private enum TicketPriceType
+        {
+            FreeChild,
+            Youth,
+            Adult,
+            Senior,
+            FreeSenior,
+        }
+
+        private readonly record struct TicketPrice(
+            TicketPriceType Type,
+            string PriceType,
+            int Price
+        );
+
+
+        private const int FreeChildMaximumAge = 5;
+        private const int YouthMaximumAge = 19;
+        private const int SeniorMinimumAge = 65;
+        private const int FreeSeniorMinimumAge = 100;
+
+        private const int FreePrice = 0;
+        private const int YouthPrice = 80;
+        private const int AdultPrice = 120;
+        private const int SeniorPrice = 90;
+
 
         static void Main(String[] args)
         {
@@ -32,7 +60,7 @@ namespace FlowControl
                 Console.WriteLine("Här kan du gör ett val för att kunna");
 
                 Console.WriteLine($"{(int)MenuChoice.Quit} För att avsluta");
-
+                Console.WriteLine($"{(int)MenuChoice.TicketPrice} Visa biljet pris");
 
                 Console.WriteLine($"{(int)MenuChoice.RepeatText} För att upprepa text");
                 Console.WriteLine($"{(int)MenuChoice.PrintEveryThirdWord} Skriv in dina ord här med mellanslag i mellan");
@@ -51,6 +79,10 @@ namespace FlowControl
                 {
                     case MenuChoice.Quit:
                          isRunning = false;
+                        break;
+
+                    case MenuChoice.TicketPrice:
+                        HandleTicketPrice();
                         break;
 
                     case MenuChoice.RepeatText:
@@ -80,6 +112,71 @@ namespace FlowControl
             }
 
             return choice;
+        }
+
+        static TicketPrice CalculateTicketPrice(int age)
+        { 
+
+            if (age < FreeChildMaximumAge)
+            {
+                return new TicketPrice(
+                    TicketPriceType.FreeChild,
+                    "Barn under 5 år: gratis",
+                    FreePrice
+                );
+            }
+
+            if (age > FreeSeniorMinimumAge)
+            {
+                return new TicketPrice(
+                    TicketPriceType.FreeSenior,
+                    "Person över 100 år: gratis",
+                    FreePrice
+                );
+            }
+
+            if (age <= YouthMaximumAge)
+            {
+                return new TicketPrice(
+                    TicketPriceType.Youth,
+                    "Ungdomspris",
+                    YouthPrice
+                );
+            }
+
+            if (age >= SeniorMinimumAge)
+            {
+                return new TicketPrice(
+                    TicketPriceType.Senior,
+                    "Pensionärspris",
+                    SeniorPrice
+                );
+            }
+
+            return new TicketPrice(
+                TicketPriceType.Adult,
+                "Standardpris",
+                AdultPrice
+            );
+        }
+
+        static void HandleTicketPrice()
+        {
+            Console.Write("Skriv in ålder: ");
+
+            int ?age = InputInt();
+
+            if (age is null)
+            {
+                Console.WriteLine("Age is invalid");
+                return;
+            }
+
+            var TicketPrice = CalculateTicketPrice(age.Value);
+
+
+            Console.WriteLine($"{TicketPrice.PriceType}: {TicketPrice.Price} ");
+
         }
 
         static void RepeatText(string text)
