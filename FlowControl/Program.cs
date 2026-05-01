@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
@@ -8,7 +9,24 @@ namespace FlowControl
 {
     class FlowControl
     {
-        private const int MinimumWordCount = 3;
+        // Selects one word for each interval of words.
+        private const int WordSelectionInterval = 3;
+
+        private const int RepeatCount = 10;
+        private const int FirstRepeatNumber = 1;
+
+
+        // Age limits used when calculating ticket price
+        private const int FreeChildMaximumAge = 5;
+        private const int YouthMaximumAge = 19;
+        private const int SeniorMinimumAge = 65;
+        private const int FreeSeniorMinimumAge = 100;
+
+        // Ticket prices in SEK used when calculating cinema admission.
+        private const int FreePrice = 0;
+        private const int YouthPrice = 80;
+        private const int AdultPrice = 120;
+        private const int SeniorPrice = 90;
 
         private enum MenuChoice
         {
@@ -16,7 +34,7 @@ namespace FlowControl
             TicketPrice = 1,
             GroupTicketPrice = 2,
             RepeatText = 3,
-            PrintEveryThirdWord = 4,
+            PrintWordInterval = 4,
         }
 
         private enum TicketPriceType
@@ -34,18 +52,6 @@ namespace FlowControl
             int Price
         );
 
-
-        private const int FreeChildMaximumAge = 5;
-        private const int YouthMaximumAge = 19;
-        private const int SeniorMinimumAge = 65;
-        private const int FreeSeniorMinimumAge = 100;
-
-        private const int FreePrice = 0;
-        private const int YouthPrice = 80;
-        private const int AdultPrice = 120;
-        private const int SeniorPrice = 90;
-
-
         static void Main(String[] args)
         {
 
@@ -55,17 +61,17 @@ namespace FlowControl
 
             while (isRunning)
             {
-                Console.WriteLine("Huvudmenyn");
-                Console.WriteLine("Här kan du gör ett val för att kunna");
+                Console.WriteLine();
+                Console.WriteLine("Huvudmeny");
+                Console.WriteLine("----------");
+                Console.WriteLine($"{(int)MenuChoice.Quit}. Avsluta");
+                Console.WriteLine($"{(int)MenuChoice.TicketPrice}. Visa biljettpris");
+                Console.WriteLine($"{(int)MenuChoice.GroupTicketPrice}. Visa biljettpris för grupp");
+                Console.WriteLine($"{(int)MenuChoice.RepeatText}. Upprepa text");
+                Console.WriteLine($"{(int)MenuChoice.PrintWordInterval}. Skriv ut vart {WordSelectionInterval}:e ord");
+                Console.Write("Välj ett alternativ: ");
 
-                Console.WriteLine($"{(int)MenuChoice.Quit} För att avsluta");
-                Console.WriteLine($"{(int)MenuChoice.TicketPrice} Visa biljet pris");
-                Console.WriteLine($"{(int)MenuChoice.GroupTicketPrice} Visa biljet pris för en group");
-
-                Console.WriteLine($"{(int)MenuChoice.RepeatText} För att upprepa text");
-                Console.WriteLine($"{(int)MenuChoice.PrintEveryThirdWord} Skriv in dina ord här med mellanslag i mellan");
-
-                choice = InputInt();
+                choice = InputInt("Ogiltigt val. Ange ett nummer.");
 
                 if (choice is null)
                 {
@@ -90,11 +96,11 @@ namespace FlowControl
                         break;
 
                     case MenuChoice.RepeatText:
-                        HandelRepeatText();
+                        HandleRepeatText();
                         break;
 
-                    case MenuChoice.PrintEveryThirdWord:
-                        HandleEveryThirdWord();
+                    case MenuChoice.PrintWordInterval:
+                        HandleWordInterval();
                         break;
 
                     default:
@@ -105,12 +111,12 @@ namespace FlowControl
             }
         }
 
-        static int? InputInt()
+        static int? InputInt(string errorMessage)
         {
             string? input = Console.ReadLine();
             if (!int.TryParse(input, out int choice))
             {
-                Console.WriteLine("Invalid choice. Please enter a number.");
+                Console.WriteLine(errorMessage);
                 Console.WriteLine();
                 return null;
             }
@@ -168,18 +174,18 @@ namespace FlowControl
         {
             Console.Write("Skriv in ålder: ");
 
-            int? age = InputInt();
+            int? age = InputInt("Ange en giltig ålder.");
 
             if (age is null)
             {
-                Console.WriteLine("Age is invalid");
+                Console.WriteLine("Åldern är ogiltig");
                 return;
             }
 
             var TicketPrice = CalculateTicketPrice(age.Value);
 
 
-            Console.WriteLine($"{TicketPrice.PriceType}: {TicketPrice.Price} ");
+            Console.WriteLine($"{TicketPrice.PriceType}: {TicketPrice.Price}kr");
 
         }
 
@@ -191,9 +197,9 @@ namespace FlowControl
 
             foreach (int age in ages)
             {
-                var TicketPrice = CalculateTicketPrice(age);
+                var ticketPrice = CalculateTicketPrice(age);
 
-                groupPrice += TicketPrice.Price;
+                groupPrice += ticketPrice.Price;
 
             }
 
@@ -204,11 +210,11 @@ namespace FlowControl
         {
             Console.Write("Skriv antalet bio besökare: ");
 
-            int? visitors = InputInt();
+            int? visitors = InputInt("Ange ett giltigt antal biobesökare.");
 
             if (visitors is null)
             {
-                Console.WriteLine("visitors is invalid");
+                Console.WriteLine("Ange ett giltigt antal biobesökare");
                 return;
             }
 
@@ -218,10 +224,10 @@ namespace FlowControl
             for (int i = 0; i < visitors; i++)
             {
                 Console.Write("Skriv in ålder: ");
-                age = InputInt();
+                age = InputInt("Ange en giltig ålder.");
                 if (age is null)
                 {
-                    Console.WriteLine("Age is invalid");
+                    Console.WriteLine("Åldern är ogiltig");
                     return;
                 }
 
@@ -240,10 +246,17 @@ namespace FlowControl
 
         static void RepeatText(string text)
         {
-
-            for (int i = 1; i <= 10; i++)
+            string separator = ", ";
+            for (int i = FirstRepeatNumber; i <= RepeatCount; i++)
             {
-                Console.Write($"{i.ToString()}.{text} ");
+
+                if (i % RepeatCount == 0)
+                {
+                    separator = ".";
+                }
+
+
+                Console.Write($"{i}.{text}{separator}");
             }
 
             Console.WriteLine();
@@ -254,7 +267,7 @@ namespace FlowControl
             return !string.IsNullOrWhiteSpace(input);
         }
 
-        static void HandelRepeatText()
+        static void HandleRepeatText()
         {
             Console.Write("Skriv din text här: ");
             string? input = Console.ReadLine();
@@ -284,28 +297,26 @@ namespace FlowControl
                );
         }
 
-        static void HandleEveryThirdWord()
+        static void HandleWordInterval()
         {
-            Console.Write($"Skriv in minst {MinimumWordCount} ord här: ");
-            Console.WriteLine();
+            Console.Write($"Skriv in minst {WordSelectionInterval} ord här: ");
 
             string? text = Console.ReadLine();
 
 
             string[] words = GetWords(text);
 
-            if (words.Length < MinimumWordCount)
+            if (words.Length < WordSelectionInterval)
             {
-                Console.Write("Invalid number of words");
+                Console.Write($"Texten måste innehålla minst {WordSelectionInterval} ord.");
                 Console.WriteLine();
+                return;
             }
 
-            for (int i = MinimumWordCount - 1; i < words.Length; i += MinimumWordCount)
+            for (int i = WordSelectionInterval - 1; i < words.Length; i += WordSelectionInterval)
             {
                 Console.WriteLine(words[i]);
             }
-
-            Console.WriteLine();
         }
 
         static string GetTicketPriceDescription(TicketPriceType type)
