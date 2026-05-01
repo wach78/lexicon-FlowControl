@@ -126,6 +126,7 @@ namespace FlowControl
 
         static TicketPrice CalculateTicketPrice(int age)
         {
+            ArgumentOutOfRangeException.ThrowIfNegative(age);
 
             if (age < FreeChildMaximumAge)
             {
@@ -331,5 +332,7 @@ namespace FlowControl
                 _ => "Okänd pristyp",
             };
         }
+
+    
     }
 }
