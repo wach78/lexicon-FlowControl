@@ -58,18 +58,6 @@ The cinema ticket price is calculated based on age:
 | Senior from 65 | 90 SEK |
 | Visitor over 100 | Free |
 
-## Example Usage
-
-```text
-Main menu
-----------
-0. Exit
-1. Show ticket price
-2. Show ticket price for group
-3. Repeat text
-4. Print every 3rd word
-Choose an option:
-```
 
 ## Running the Project
 
