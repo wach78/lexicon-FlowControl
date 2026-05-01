@@ -126,7 +126,6 @@ namespace FlowControl
 
         static TicketPrice CalculateTicketPrice(int age)
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(age);
 
             if (age < FreeChildMaximumAge)
             {
@@ -177,7 +176,7 @@ namespace FlowControl
 
             int? age = InputInt("Ange en giltig ålder.");
 
-            if (age is null)
+            if (age is null || !IsNotNegative(age.Value))
             {
                 Console.WriteLine("Åldern är ogiltig");
                 return;
@@ -213,7 +212,7 @@ namespace FlowControl
 
             int? visitors = InputInt("Ange ett giltigt antal biobesökare.");
 
-            if (visitors is null)
+            if (visitors is null || !IsPositive(visitors.Value))
             {
                 Console.WriteLine("Ange ett giltigt antal biobesökare");
                 return;
@@ -226,7 +225,8 @@ namespace FlowControl
             {
                 Console.Write("Skriv in ålder: ");
                 age = InputInt("Ange en giltig ålder.");
-                if (age is null)
+
+                if (age is null || !IsNotNegative(age.Value))
                 {
                     Console.WriteLine("Åldern är ogiltig");
                     return;
@@ -333,6 +333,14 @@ namespace FlowControl
             };
         }
 
-    
+        static bool IsNotNegative(int vaule)
+        {
+            return vaule >= 0;
+        }
+
+        static bool IsPositive(int vaule)
+        {
+            return vaule > 0;
+        }
     }
 }
