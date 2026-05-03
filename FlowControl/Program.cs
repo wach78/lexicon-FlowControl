@@ -64,11 +64,11 @@ namespace FlowControl
                 Console.WriteLine();
                 Console.WriteLine("Huvudmeny");
                 Console.WriteLine("----------");
-                Console.WriteLine($"{(int)MenuChoice.Quit}. Avsluta");
                 Console.WriteLine($"{(int)MenuChoice.TicketPrice}. Visa biljettpris");
                 Console.WriteLine($"{(int)MenuChoice.GroupTicketPrice}. Visa biljettpris för grupp");
                 Console.WriteLine($"{(int)MenuChoice.RepeatText}. Upprepa text");
                 Console.WriteLine($"{(int)MenuChoice.PrintWordInterval}. Skriv ut vart {WordSelectionInterval}:e ord");
+                Console.WriteLine($"{(int)MenuChoice.Quit}. Avsluta");
                 Console.Write("Välj ett alternativ: ");
 
                 choice = InputInt("Ogiltigt val. Ange ett nummer.");

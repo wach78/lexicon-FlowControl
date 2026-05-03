@@ -39,11 +39,11 @@ The code demonstrates:
 The console menu includes the following options:
 
 ```text
-0. Exit
-1. Show ticket price
-2. Show ticket price for group
-3. Repeat text
-4. Print words by interval
+1. Visa biljettpris
+2. Visa biljettpris för grupp
+3. Upprepa text
+4. Skriv ut vart 3:e ord
+0. Avsluta
 ```
 
 ## Ticket Price Rules
